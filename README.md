@@ -8,28 +8,27 @@
 </p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Deploy with Vercel](https://img.shields.io/badge/Vercel-1--Click%20Deploy-000000?logo=vercel&logoColor=white)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fnazmul-d3v%2FNeno-lamp)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-neno--lamp.vercel.app-00f2fe?logo=vercel&logoColor=white)](https://neno-lamp.vercel.app/)
 [![Vanilla JS](https://img.shields.io/badge/Vanilla-JavaScript%20ES6+-f7df1e?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![HTML5 / CSS3](https://img.shields.io/badge/HTML5%20%2F%20CSS3-Modern%20UI-e34f26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
 [![Web Audio API](https://img.shields.io/badge/Web%20Audio-Procedural%20Sound-blueviolet)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
 [![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-brightgreen)](#)
 
-[⚡ 1-Click Deploy on Vercel](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fnazmul-d3v%2FNeno-lamp) • [Explore Features](#-key-features) • [Quick Start](#-quick-start) • [Color Themes](#-neon-color-themes) • [Controls & Shortcuts](#-controls--shortcuts)
+[🚀 Live Demo](https://neno-lamp.vercel.app/) • [⚡ 1-Click Deploy](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fnazmul-d3v%2FNeno-lamp) • [Explore Features](#-key-features) • [Quick Start](#-quick-start) • [Color Themes](#-neon-color-themes) • [Controls & Shortcuts](#-controls--shortcuts)
 
 </div>
 
 ---
 
-## 🌐 Instant Deployment & Live Demo
+## 🌐 Live Demo & Deployment
 
-You can deploy your own live production instance on **Vercel** with a single click:
+| Resource | Link | Status |
+| :--- | :--- | :---: |
+| **Official Live App** | [**https://neno-lamp.vercel.app/**](https://neno-lamp.vercel.app/) | 🟢 **Live & Active** |
+| **1-Click Vercel Deploy** | [**Clone & Deploy Your Own**](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fnazmul-d3v%2FNeno-lamp) | ⚡ Instant |
+| **GitHub Pages** | [Settings → Pages](https://github.com/nazmul-d3v/Neno-lamp/settings/pages) (source: `gh-pages`) | 📦 Built |
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fnazmul-d3v%2FNeno-lamp)
-
-| Deployment Method | Guide / URL |
-| :--- | :--- |
-| **Vercel (1-Click)** | Click the **Deploy with Vercel** button above or visit [vercel.com/new](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fnazmul-d3v%2FNeno-lamp) |
-| **GitHub Pages** | Go to **Settings** → **Pages** → Source: **Deploy from branch** (`main` or `gh-pages`) |
 
 ---
 
