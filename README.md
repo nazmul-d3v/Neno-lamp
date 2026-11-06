@@ -20,18 +20,6 @@
 
 ---
 
-## 🌐 Live Demo & Deployment
-
-| Resource | Link | Status |
-| :--- | :--- | :---: |
-| **Official Live App** | [**https://neno-lamp.vercel.app/**](https://neno-lamp.vercel.app/) | 🟢 **Live & Active** |
-| **1-Click Vercel Deploy** | [**Clone & Deploy Your Own**](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fnazmul-d3v%2FNeno-lamp) | ⚡ Instant |
-| **GitHub Pages** | [Settings → Pages](https://github.com/nazmul-d3v/Neno-lamp/settings/pages) (source: `gh-pages`) | 📦 Built |
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fnazmul-d3v%2FNeno-lamp)
-
----
-
 ## 🌟 Overview
 
 **Neon Lamp Login** is an interactive web experience inspired by cyberpunk aesthetics and realistic industrial design. At its core is a fully articulated SVG desk lamp with an interactive pull-cord switch. Turning the lamp on projects an illuminated volumetric cone of light across a glassmorphic login interface, complete with floating ambient dust particles and tactile synthesized sound effects.
