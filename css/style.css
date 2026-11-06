@@ -1,0 +1,290 @@
+/* ==========================================================================
+   NEON LAMP LOGIN FORM - MAIN DESIGN SYSTEM
+   Inspired by @code_wars_official "Neon Lamp Login Form"
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+    /* Dynamic Theme Colors (Default: Neon Cyan) */
+    --neon-primary: #00f2fe;
+    --neon-secondary: #00c6ff;
+    --neon-glow: rgba(0, 242, 254, 0.45);
+    --neon-glow-soft: rgba(0, 242, 254, 0.18);
+    --card-border-glow: rgba(0, 242, 254, 0.25);
+    --neon-btn-text: #04101e;
+
+    /* Base Palette */
+    --bg-dark-1: #070b13;
+    --bg-dark-2: #0b121e;
+    --bg-dark-3: #04060a;
+    
+    --card-bg: rgba(13, 20, 32, 0.72);
+    --card-bg-off: rgba(10, 15, 24, 0.88);
+    --card-border-default: rgba(255, 255, 255, 0.08);
+    
+    --input-bg: rgba(7, 12, 21, 0.65);
+    --input-border: rgba(255, 255, 255, 0.10);
+    --input-focus-border: var(--neon-primary);
+    
+    --text-primary: #ffffff;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+
+    /* Metallic Lamp Finishes */
+    --brass-light: #f7e379;
+    --brass-mid: #d4a02c;
+    --brass-dark: #8a6516;
+    --gunmetal-light: #334155;
+    --gunmetal-dark: #1e293b;
+
+    /* Transitions */
+    --trans-fast: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    --trans-normal: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    --trans-lamp: 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Global Reset */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--text-primary);
+    background-color: var(--bg-dark-1);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: radial-gradient(circle at 25% 45%, #0e1b2f 0%, #080e18 55%, #03060a 100%);
+    position: relative;
+    transition: background var(--trans-lamp);
+}
+
+body.lamp-off {
+    background: radial-gradient(circle at 25% 45%, #090e18 0%, #05080e 65%, #020306 100%);
+}
+
+/* Ambient Canvas Overlay */
+#ambientCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+}
+
+/* Floating Top Toolbar */
+.top-toolbar {
+    position: fixed;
+    top: 24px;
+    right: 28px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    z-index: 50;
+}
+
+.theme-picker-group {
+    display: flex;
+    align-items: center;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    padding: 4px 6px;
+    gap: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.theme-pill {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform var(--trans-fast), box-shadow var(--trans-fast), border-color var(--trans-fast);
+    outline: none;
+}
+
+.theme-pill:hover {
+    transform: scale(1.18);
+}
+
+.theme-pill.active {
+    border-color: #ffffff;
+    box-shadow: 0 0 10px currentColor;
+    transform: scale(1.12);
+}
+
+.theme-pill[data-theme="cyan"] { background-color: #00f2fe; }
+.theme-pill[data-theme="magenta"] { background-color: #ff2a85; }
+.theme-pill[data-theme="amber"] { background-color: #ffaa00; }
+.theme-pill[data-theme="emerald"] { background-color: #00ff88; }
+.theme-pill[data-theme="violet"] { background-color: #a855f7; }
+
+.icon-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--trans-fast);
+    outline: none;
+}
+
+.icon-btn:hover {
+    color: #ffffff;
+    border-color: var(--neon-primary);
+    box-shadow: 0 0 12px var(--neon-glow-soft);
+    transform: scale(1.05);
+}
+
+.icon-btn.muted {
+    color: var(--text-muted);
+}
+
+/* Keyboard hint chip */
+.keyboard-hint {
+    position: fixed;
+    bottom: 20px;
+    left: 28px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    background: rgba(13, 20, 32, 0.55);
+    backdrop-filter: blur(10px);
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    z-index: 40;
+    pointer-events: none;
+    transition: opacity var(--trans-normal);
+}
+
+.keyboard-hint kbd {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 5px;
+    padding: 2px 7px;
+    font-size: 0.72rem;
+    font-family: inherit;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Master Stage Layout */
+.app-stage {
+    position: relative;
+    width: 100%;
+    max-width: 1380px;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2rem 4rem;
+    z-index: 10;
+}
+
+/* Success Glow Surge */
+@keyframes surgeEffect {
+    0% { filter: brightness(1) drop-shadow(0 0 0 transparent); }
+    50% { filter: brightness(1.25) drop-shadow(0 0 35px var(--neon-primary)); }
+    100% { filter: brightness(1) drop-shadow(0 0 0 transparent); }
+}
+
+body.success-surge .auth-card {
+    animation: surgeEffect 1.1s ease-out;
+}
+
+/* Interactive Toast Notification */
+.toast-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(13, 22, 37, 0.92);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--neon-primary);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px var(--neon-glow);
+    padding: 14px 20px;
+    border-radius: 14px;
+    color: #ffffff;
+    z-index: 100;
+    transform: translateY(120px);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+}
+
+.toast-container.show {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.toast-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--neon-primary);
+    color: var(--neon-btn-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+
+.toast-container.error-toast {
+    border-color: #ff3366;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 51, 102, 0.35);
+}
+
+.toast-container.error-toast .toast-icon {
+    background: #ff3366;
+    color: #ffffff;
+}
+
+.toast-message {
+    font-size: 0.92rem;
+    font-weight: 500;
+}
+
+.toast-close {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    cursor: pointer;
+    line-height: 1;
+    padding-left: 6px;
+    transition: color var(--trans-fast);
+}
+
+.toast-close:hover {
+    color: #ffffff;
+}

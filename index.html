@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Lamp Login | Interactive 3D Lighting Experience</title>
+    <meta name="description" content="A futuristic, hyper-realistic neon desk lamp interactive login form inspired by @code_wars_official. Featuring real-time lighting physics, volumetric light beams, and sound synthesis.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏮</text></svg>">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/lamp.css">
+    <link rel="stylesheet" href="css/card.css">
+</head>
+<body class="lamp-on">
+
+    <!-- Ambient Dust Particles Canvas -->
+    <canvas id="ambientCanvas"></canvas>
+
+    <!-- Top Quick Toolbar -->
+    <header class="top-toolbar">
+        <!-- Color Theme Switcher -->
+        <div class="theme-picker-group" title="Select Neon Glow Color">
+            <button class="theme-pill active" data-theme="cyan" title="Neon Cyan (Default)"></button>
+            <button class="theme-pill" data-theme="magenta" title="Cyber Magenta"></button>
+            <button class="theme-pill" data-theme="amber" title="Warm Tungsten"></button>
+            <button class="theme-pill" data-theme="emerald" title="Matrix Green"></button>
+            <button class="theme-pill" data-theme="violet" title="Ultra Violet"></button>
+        </div>
+
+        <!-- Audio Mute / Unmute Toggle -->
+        <button class="icon-btn" id="toggleSoundBtn" title="Toggle Sound Effects" aria-label="Toggle Sound">
+            <!-- Sound ON Icon -->
+            <svg class="sound-on-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+            <!-- Sound OFF Icon -->
+            <svg class="sound-off-icon" style="display: none;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <line x1="23" y1="9" x2="17" y2="15"></line>
+                <line x1="17" y1="9" x2="23" y2="15"></line>
+            </svg>
+        </button>
+    </header>
+
+    <!-- Bottom Keyboard Shortcut Hint -->
+    <aside class="keyboard-hint" aria-hidden="true">
+        <span>Press <kbd>Space</kbd> or <kbd>L</kbd> to toggle lamp</span>
+    </aside>
+
+    <!-- Main Application Stage -->
+    <main class="app-stage">
+
+        <!-- ==========================================
+             LEFT: INTERACTIVE NEON DESK LAMP
+             ========================================== -->
+        <section class="lamp-stage" aria-label="Interactive Lamp">
+            <div class="lamp-wrapper">
+
+                <!-- Ground Plane Shadows & Reflections -->
+                <div class="desk-shadow"></div>
+                <div class="desk-light-reflection"></div>
+
+                <!-- Volumetric Spotlight Cone / Light Beam -->
+                <div class="light-beam-container">
+                    <div class="light-beam" id="lightBeam"></div>
+                </div>
+
+                <!-- Interactive Hint Tooltip -->
+                <div class="cord-tooltip" id="cordTooltip">Pull or click cord to toggle lamp</div>
+
+                <!-- SVG Desk Lamp -->
+                <svg id="lampSvg" viewBox="0 0 540 560" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <!-- Metallic Brass Gradients -->
+                        <linearGradient id="brassGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#fff2a1"/>
+                            <stop offset="28%" stop-color="#e0b038"/>
+                            <stop offset="70%" stop-color="#9a711c"/>
+                            <stop offset="100%" stop-color="#5a410b"/>
+                        </linearGradient>
+
+                        <linearGradient id="brassJointGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#f5e182"/>
+                            <stop offset="50%" stop-color="#b88924"/>
+                            <stop offset="100%" stop-color="#694a0f"/>
+                        </linearGradient>
+
+                        <!-- Gunmetal Lamp Base & Shade Gradients -->
+                        <linearGradient id="gunmetalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#2c394b"/>
+                            <stop offset="45%" stop-color="#1b2430"/>
+                            <stop offset="100%" stop-color="#0f151e"/>
+                        </linearGradient>
+
+                        <radialGradient id="baseRadial" cx="50%" cy="40%" r="60%">
+                            <stop offset="0%" stop-color="#334257"/>
+                            <stop offset="50%" stop-color="#1e2735"/>
+                            <stop offset="85%" stop-color="#121822"/>
+                            <stop offset="100%" stop-color="#080c12"/>
+                        </radialGradient>
+
+                        <!-- Lampshade Inner Reflector Glow -->
+                        <radialGradient id="reflectorGlow" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#ffffff"/>
+                            <stop offset="25%" stop-color="#c9f8ff"/>
+                            <stop offset="65%" stop-color="#00e5ff" stop-opacity="0.8"/>
+                            <stop offset="100%" stop-color="#008ba3" stop-opacity="0.1"/>
+                        </radialGradient>
+
+                        <!-- High Intensity Bulb Glow Filter -->
+                        <filter id="bulbIntenseFilter" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur1"/>
+                            <feGaussianBlur in="SourceGraphic" stdDeviation="16" result="blur2"/>
+                            <feMerge>
+                                <feMergeNode in="blur2"/>
+                                <feMergeNode in="blur1"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+
+                    <!-- 1. BASE: Circular Desk Stand with Metallic Bevel -->
+                    <g id="lampBaseGroup">
+                        <!-- Outer Base Lip / Rim Shadow -->
+                        <ellipse cx="240" cy="485" rx="98" ry="32" fill="#0b1017"/>
+                        <!-- Base Bevel Ring -->
+                        <ellipse cx="240" cy="482" rx="95" ry="30" fill="url(#brassJointGrad)" stroke="#554014" stroke-width="1"/>
+                        <!-- Top Surface of Base -->
+                        <ellipse cx="240" cy="480" rx="92" ry="28" fill="url(#baseRadial)" stroke="#3e4e63" stroke-width="1.2"/>
+                        <!-- Inner Accent Ring -->
+                        <ellipse cx="240" cy="480" rx="76" ry="22" fill="none" stroke="#253243" stroke-width="1.5" stroke-dasharray="8 4"/>
+
+                        <!-- Center Brass Arm Pivot Pin Base -->
+                        <ellipse cx="236" cy="478" rx="22" ry="8" fill="url(#brassGrad)"/>
+                        <circle cx="236" cy="476" r="10" fill="url(#brassJointGrad)" stroke="#4e380e" stroke-width="1"/>
+                        <circle cx="236" cy="476" r="4" fill="#1b2430"/>
+
+                        <!-- Push-Button Switch on Base -->
+                        <g id="lampBaseSwitch" title="Click base switch">
+                            <ellipse cx="292" cy="486" rx="9" ry="5.5" fill="#151d27" stroke="#334255" stroke-width="1"/>
+                            <ellipse cx="292" cy="485" rx="7" ry="4" fill="#243040"/>
+                            <!-- Indicator Light Inside Switch -->
+                            <ellipse id="baseSwitchGlow" cx="292" cy="485" rx="3.5" ry="2" fill="var(--neon-primary)" opacity="0.95"/>
+                        </g>
+                    </g>
+
+                    <!-- 2. LOWER ARM: Twin Brass Tubular Struts -->
+                    <g id="lowerArmGroup">
+                        <!-- Back Rod -->
+                        <line x1="232" y1="472" x2="167" y2="318" stroke="url(#brassGrad)" stroke-width="5" stroke-linecap="round"/>
+                        <!-- Front Rod -->
+                        <line x1="242" y1="474" x2="177" y2="320" stroke="url(#brassGrad)" stroke-width="5" stroke-linecap="round"/>
+                        <!-- Diagonal Stabilizer Braces -->
+                        <line x1="230" y1="440" x2="182" y2="340" stroke="#7e5d16" stroke-width="2.5"/>
+                    </g>
+
+                    <!-- 3. ELBOW JOINT: Precision Articulated Pivot Disc -->
+                    <g id="elbowJointGroup">
+                        <!-- Pivot Disc Outer -->
+                        <circle cx="172" cy="318" r="17" fill="url(#gunmetalGrad)" stroke="#475569" stroke-width="1.5"/>
+                        <!-- Brass Bevel Ring -->
+                        <circle cx="172" cy="318" r="13" fill="url(#brassJointGrad)" stroke="#4e3911" stroke-width="1"/>
+                        <!-- Tightening Screw Knob -->
+                        <circle cx="172" cy="318" r="7" fill="#1e293b"/>
+                        <rect x="166" y="316.5" width="12" height="3" rx="1.5" fill="url(#brassGrad)"/>
+                    </g>
+
+                    <!-- 4. UPPER ARM: Twin Brass Tubular Struts -->
+                    <g id="upperArmGroup">
+                        <!-- Back Rod -->
+                        <line x1="172" y1="316" x2="235" y2="186" stroke="url(#brassGrad)" stroke-width="5" stroke-linecap="round"/>
+                        <!-- Front Rod -->
+                        <line x1="178" y1="322" x2="242" y2="192" stroke="url(#brassGrad)" stroke-width="5" stroke-linecap="round"/>
+                    </g>
+
+                    <!-- 5. WRIST / HEAD MOUNTING JOINT -->
+                    <g id="wristJointGroup">
+                        <circle cx="238" cy="188" r="10" fill="url(#brassJointGrad)" stroke="#4b360d" stroke-width="1"/>
+                        <circle cx="238" cy="188" r="4.5" fill="#1b2430"/>
+                        <!-- Swivel neck bracket attaching to shade dome -->
+                        <path d="M 235 186 Q 248 180 258 190" stroke="url(#brassGrad)" stroke-width="7" fill="none" stroke-linecap="round"/>
+                    </g>
+
+                    <!-- 6. LAMPSHADE & BULB ASSEMBLY -->
+                    <g id="lampHeadGroup" style="cursor: pointer;" title="Lamp Shade (Click to Toggle)">
+                        <!-- Lampshade Outer Dome Body -->
+                        <path id="shadeOuter" d="M 242 186
+                                 C 220 180, 195 205, 205 242
+                                 C 208 252, 218 258, 230 258
+                                 L 295 220
+                                 C 298 205, 280 186, 242 186 Z"
+                              fill="url(#gunmetalGrad)"
+                              stroke="#475569"
+                              stroke-width="1.8"/>
+
+                        <!-- Lampshade Specular Highlight -->
+                        <path d="M 238 190 C 224 195, 210 215, 214 235"
+                              fill="none"
+                              stroke="rgba(255, 255, 255, 0.22)"
+                              stroke-width="2.5"
+                              stroke-linecap="round"/>
+
+                        <!-- Interior Reflector (visible inside shade rim) -->
+                        <ellipse id="shadeInteriorLight" cx="260" cy="235" rx="44" ry="24"
+                                 transform="rotate(-28 260 235)"
+                                 fill="url(#reflectorGlow)"
+                                 opacity="0.85"/>
+
+                        <!-- Glowing Rim of Lampshade -->
+                        <ellipse id="lampAperture" cx="260" cy="235" rx="45" ry="25"
+                                 transform="rotate(-28 260 235)"
+                                 fill="none"
+                                 stroke="var(--neon-primary)"
+                                 stroke-width="2.2"
+                                 opacity="0.9"/>
+
+                        <!-- Luminous Neon Bulb Center -->
+                        <g id="bulbGlowContainer" transform="translate(254, 230)">
+                            <!-- Outer Wide Glow Halo -->
+                            <circle id="bulbGlowCircle" cx="0" cy="0" r="22"
+                                    fill="var(--neon-primary)"
+                                    opacity="0.9"
+                                    filter="url(#bulbIntenseFilter)"/>
+                            <!-- Intense White/Cyan Core -->
+                            <circle id="bulbIntenseCore" cx="0" cy="0" r="11"
+                                    fill="#ffffff"
+                                    opacity="0.95"/>
+                        </g>
+                    </g>
+
+                    <!-- 7. PULL CORD & BEAD (Interactive Physics Driven) -->
+                    <g id="pullCordGroup" title="Drag or click to pull cord">
+                        <!-- Cord Line -->
+                        <line id="pullCordLine"
+                              x1="228" y1="246"
+                              x2="228" y2="335"
+                              stroke="#d4a02c"
+                              stroke-width="2"
+                              stroke-dasharray="2 3"
+                              stroke-linecap="round"/>
+
+                        <!-- Hanging Bead Pendant -->
+                        <g id="pullCordBead" transform="translate(0, 0)">
+                            <!-- Small connector ring -->
+                            <circle cx="228" cy="336" r="2.5" fill="#f5e182"/>
+                            <!-- Beaded Pendant Cylinder / Teardrop -->
+                            <rect x="225" y="338" width="6" height="15" rx="3" fill="url(#brassGrad)" stroke="#533c0c" stroke-width="0.8"/>
+                            <!-- Glowing Neon Tip -->
+                            <circle cx="228" cy="353" r="3.5" fill="var(--neon-primary)" opacity="0.95"/>
+                            <!-- Pull grip affordance lines -->
+                            <line x1="226" y1="343" x2="230" y2="343" stroke="#583f0d" stroke-width="1"/>
+                            <line x1="226" y1="346" x2="230" y2="346" stroke="#583f0d" stroke-width="1"/>
+                        </g>
+                    </g>
+                </svg>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             RIGHT: GLASSMORPHIC AUTHENTICATION CARD
+             ========================================== -->
+        <section class="card-stage">
+            <article class="auth-card" id="authCard">
+
+                <!-- Lamp OFF Reminder Banner -->
+                <div class="lamp-off-banner" id="lampOffBanner" title="Turn on lights">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                    <span>Lights are OFF &bull; Click to illuminate</span>
+                </div>
+
+                <!-- Card Header -->
+                <header class="card-header">
+                    <h1 class="card-title" id="cardTitle">Welcome</h1>
+                    <p class="card-subtitle" id="cardSubtitle">Enter your credentials to access your account.</p>
+                </header>
+
+                <!-- Segmented Tabs: [ Sign In ] [ Sign Up ] -->
+                <nav class="auth-tabs" id="authTabs" aria-label="Authentication Options">
+                    <div class="tab-indicator" id="tabIndicator"></div>
+                    <button class="tab-btn active" data-tab="signin" type="button">Sign In</button>
+                    <button class="tab-btn" data-tab="signup" type="button">Sign Up</button>
+                </nav>
+
+                <!-- ==========================================
+                     FORM 1: SIGN IN (Default)
+                     ========================================== -->
+                <form class="auth-form active-form" id="signinForm" autocomplete="on">
+                    <!-- Username or Email -->
+                    <div class="input-group">
+                        <label class="input-label" for="signinEmail">Username or Email</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <input class="form-input" type="text" id="signinEmail" name="email" placeholder="e.g. alex@example.com" required autocomplete="username">
+                        </div>
+                    </div>
+
+                    <!-- Password + Forgot Link -->
+                    <div class="input-group">
+                        <div class="input-label-row">
+                            <label class="input-label" for="signinPassword">Password</label>
+                            <a href="#forgot" class="forgot-link" id="forgotPasswordLink">Forgot?</a>
+                        </div>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            <input class="form-input" type="password" id="signinPassword" name="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" required autocomplete="current-password">
+                            <!-- Toggle Eye Visibility -->
+                            <button type="button" class="toggle-password-btn" data-target="signinPassword" aria-label="Toggle password visibility">
+                                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg class="eye-off-icon" style="display: none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Remember Me Option -->
+                    <div class="remember-row">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="rememberMe" checked>
+                            <span class="custom-checkbox">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            </span>
+                            <span>Remember me</span>
+                        </label>
+                    </div>
+
+                    <!-- Primary Neon CTA Button -->
+                    <button class="btn-primary" type="submit" id="signinSubmitBtn">
+                        <span>Sign In</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+
+                    <!-- Divider -->
+                    <div class="social-divider">
+                        <span>Or continue with</span>
+                    </div>
+
+                    <!-- Social Login Buttons -->
+                    <div class="social-buttons-row">
+                        <!-- Google -->
+                        <button class="social-btn" type="button" data-provider="Google" title="Sign in with Google" aria-label="Sign in with Google">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z"/>
+                            </svg>
+                        </button>
+                        <!-- Apple -->
+                        <button class="social-btn" type="button" data-provider="Apple" title="Sign in with Apple" aria-label="Sign in with Apple">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.89c.66-.82 1.11-1.96.99-3.1-.96.04-2.12.64-2.8 1.44-.59.69-1.12 1.82-.98 2.94 1.07.08 2.15-.49 2.79-1.28z"/>
+                            </svg>
+                        </button>
+                        <!-- GitHub -->
+                        <button class="social-btn" type="button" data-provider="GitHub" title="Sign in with GitHub" aria-label="Sign in with GitHub">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- ==========================================
+                     FORM 2: SIGN UP (Registration)
+                     ========================================== -->
+                <form class="auth-form" id="signupForm" autocomplete="on">
+                    <div class="input-group">
+                        <label class="input-label" for="signupName">Full Name</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <input class="form-input" type="text" id="signupName" name="name" placeholder="Alex Morgan" required autocomplete="name">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label" for="signupEmail">Email Address</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                            <input class="form-input" type="email" id="signupEmail" name="email" placeholder="alex@company.com" required autocomplete="email">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label" for="signupPassword">Create Password</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            <input class="form-input" type="password" id="signupPassword" name="new-password" placeholder="At least 8 characters" required autocomplete="new-password">
+                            <button type="button" class="toggle-password-btn" data-target="signupPassword" aria-label="Toggle password visibility">
+                                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg class="eye-off-icon" style="display: none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label" for="signupConfirm">Confirm Password</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            <input class="form-input" type="password" id="signupConfirm" name="confirm-password" placeholder="Repeat your password" required autocomplete="new-password">
+                        </div>
+                    </div>
+
+                    <div class="remember-row">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="termsCheck" required checked>
+                            <span class="custom-checkbox">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            </span>
+                            <span>I agree to Terms &amp; Privacy Policy</span>
+                        </label>
+                    </div>
+
+                    <button class="btn-primary" type="submit" id="signupSubmitBtn">
+                        <span>Create Account</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                </form>
+
+                <!-- ==========================================
+                     FORM 3: FORGOT PASSWORD RECOVERY
+                     ========================================== -->
+                <form class="auth-form" id="forgotForm">
+                    <div class="input-group">
+                        <label class="input-label" for="forgotEmail">Registered Email</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                            <input class="form-input" type="email" id="forgotEmail" placeholder="Enter your registered email" required>
+                        </div>
+                    </div>
+
+                    <button class="btn-primary" type="submit" id="forgotSubmitBtn">
+                        <span>Send Recovery Link</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+
+                    <button class="btn-secondary" type="button" id="backToSignInBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        <span>Back to Sign In</span>
+                    </button>
+                </form>
+
+            </article>
+        </section>
+    </main>
+
+    <!-- Interactive Toast Feedback -->
+    <aside class="toast-container" id="successToast" role="alert">
+        <div class="toast-icon" id="toastIcon">✓</div>
+        <div class="toast-message" id="toastMessage">Welcome back! Authentication successful.</div>
+        <button class="toast-close" id="closeToast" aria-label="Close message">&times;</button>
+    </aside>
+
+    <!-- Application Script (ES Module) -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
